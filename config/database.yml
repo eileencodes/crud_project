@@ -1,6 +1,6 @@
 development:
   adapter:  mysql2
-  database: brc_database
+  database: brc_database_dev
   username: root
   password:
   host: localhost
@@ -10,14 +10,14 @@ development:
 # Do not set this db to the same as development or production.
 test:
   adapter:  mysql2
-  database: brc_database
+  database: brc_database_test
   username: root
   password:
   host: localhost
 
 production:
   adapter:  mysql2
-  database: brc_database
+  database: brc_database_prod
   username: root
   password:
   host: localhost

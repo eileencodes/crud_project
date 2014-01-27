@@ -22,6 +22,7 @@ class CreateContacts < ActiveRecord::Migration
       t.date :birthday
       t.string :suffix
       t.string :prefix
+      t.integer :user_id
     end
   end
 end
