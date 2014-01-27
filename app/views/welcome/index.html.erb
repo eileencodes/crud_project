@@ -1,1 +1,19 @@
-hi
+<h1>Address Book</h1>
+<div class="row">
+  <div class="half-col">
+    <h2>Login</h2>
+    <%= form_tag :login do %>
+      <label>Email:</label>
+      <%= text_field_tag :email, params[:email] %>
+
+      <label>Password:</label>
+      <%= password_field_tag :password %>
+
+      <%= submit_tag  "Login" %>
+    <% end %>
+  </div>
+
+  <div class="half-col">
+    <%= render :partial => "shared/user_create" %>
+  </div>
+</div>
