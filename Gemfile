@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '4.0.2'
 gem 'mysql2'
+gem 'bcrypt-ruby'
 
 # styles & views
 gem 'sass-rails', '~> 4.0.0'

@@ -27,6 +27,7 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.1)
     atomic (1.1.14)
+    bcrypt-ruby (3.1.2)
     bootstrap-sass (3.0.3.0)
       sass (~> 3.2)
     builder (3.1.4)
@@ -54,7 +55,7 @@ GEM
     mime-types (1.25.1)
     minitest (4.7.5)
     multi_json (1.8.4)
-    mysql2 (0.3.14)
+    mysql2 (0.3.15)
     polyglot (0.3.3)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -75,7 +76,7 @@ GEM
     rake (10.1.1)
     rdoc (4.1.1)
       json (~> 1.4)
-    sass (3.2.13)
+    sass (3.2.14)
     sass-rails (4.0.1)
       railties (>= 4.0.0, < 5.0)
       sass (>= 3.1.10)
@@ -110,6 +111,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt-ruby
   bootstrap-sass (~> 3.0.3.0)
   coffee-rails (~> 4.0.0)
   jbuilder (~> 1.2)
