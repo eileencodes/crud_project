@@ -1,5 +1,7 @@
+<h1><%= @user.full_name %>'s Address Book</h1>
 <% if @user.contacts.any? %>
   yo you have contacts
 <% else %>
-  Boo no contacts, let's add some.
+  <p>You have no contacts. To add some click the "Add Contact" button.</p>
+  <%= link_to "Add Contact", new_user_contact_path(@user), class: "btn btn-default" %>
 <% end %>
