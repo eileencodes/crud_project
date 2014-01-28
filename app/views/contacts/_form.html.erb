@@ -1,0 +1,58 @@
+<%= form_for([ :user, @contact ]) do |f| %>
+  <div class="half-col">
+    <div class="form-inline">
+      <div class="form-group">
+        <%= f.label :prefix %>
+        <%= f.select :prefix, @contact.prefix_options, include_blank: true %>
+      </div>
+      <div class="form-group">
+        <%= f.label :suffix %>
+        <%= f.text_field :suffix %>
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group">
+        <%= f.label :first_name %>
+        <%= f.text_field :first_name %>
+      </div>
+      <div class="form-group">
+        <%= f.label :last_name %>
+        <%= f.text_field :last_name %>
+      </div>
+    </div>
+    <%= f.label :birthday %><br />
+    <%= f.datetime_select :birthday %><br />
+    <%= f.label :phone %>
+    <%= f.text_field :phone %>
+    <%= f.label :email %>
+    <%= f.text_field :email %>
+    <%= f.label :address_1 %>
+    <%= f.text_field :address_1 %>
+    <%= f.label :address_2 %>
+    <%= f.text_field :address_2 %>
+    <%= f.label :state %>
+    <%= f.text_field :state %>
+    <%= f.label :city %>
+    <%= f.text_field :city %>
+    <%= f.label :postal_code %>
+    <%= f.text_field :postal_code %>
+    <%= f.label :country %>
+    <%= f.text_field :country %>
+  </div>
+  <div class="half-col">
+    <%= f.label :company %>
+    <%= f.text_field :company %>
+    <%= f.label :comapny_address_1 %>
+    <%= f.text_field :company_address_1 %>
+    <%= f.label :company_address_2 %>
+    <%= f.text_field :company_address_2 %>
+    <%= f.label :company_state %>
+    <%= f.text_field :company_state %>
+    <%= f.label :company_city %>
+    <%= f.text_field :company_city %>
+    <%= f.label :company_postal_code %>
+    <%= f.text_field :company_postal_code %>
+    <%= f.label :company_country %>
+    <%= f.text_field :company_country %>
+  </div>
+<% end %>
