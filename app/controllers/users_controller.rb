@@ -18,7 +18,7 @@ class UsersController < ApplicationController
       if @user.save
         format.html { redirect_to user_contacts_path(@user.id), notice: "Your account has been successfully created." }
       else
-        format.html { render :action => "new" }
+        format.html { render action: "new" }
       end
     end
   end
@@ -38,7 +38,7 @@ class UsersController < ApplicationController
       if @user.update_attributes(user_params)
         format.html { redirect_to user_contacts_path(@user.id), notice: 'Your account has been successfully updated.' }
       else
-        format.html { render :action => "edit" }
+        format.html { render action: "edit" }
       end
     end
   end
