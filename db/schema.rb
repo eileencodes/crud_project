@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140201150234) do
+ActiveRecord::Schema.define(version: 20140201213034) do
 
   create_table "contacts", force: true do |t|
     t.string  "first_name"
@@ -36,18 +36,11 @@ ActiveRecord::Schema.define(version: 20140201150234) do
     t.string  "prefix"
     t.integer "user_id"
     t.string  "city"
-  end
-
-  create_table "social_account_types", force: true do |t|
-    t.string "name"
-    t.string "icon"
-    t.string "profile_link"
-  end
-
-  create_table "social_accounts", force: true do |t|
-    t.string  "profile_handle"
-    t.integer "contact_id"
-    t.string  "social_account_type_id"
+    t.string  "twitter_account_link"
+    t.string  "facebook_account_link"
+    t.string  "linkedin_account_link"
+    t.string  "gplus_account_link"
+    t.string  "github_account_link"
   end
 
   create_table "users", force: true do |t|
