@@ -1,7 +1,36 @@
-<h1><%= @user.full_name %>'s Address Book</h1>
-<% if @user.contacts.any? %>
-  yo you have contacts
+<h1><%= current_user.full_name %>'s Address Book</h1>
+<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn btn-default" %>
+<% if current_user.contacts.any? %>
+  <table class="table table-condensed table-hover">
+    <tr>
+      <th>Name</th>
+      <th>Profiles</th>
+      <th>Company</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+    <% @contacts.each do |contact| %>
+      <tr>
+        <td><%= link_to contact.full_name, user_contact_path(current_user, contact) %></td>
+        <td>
+          <%= link_to "Twitter", contact.twitter_account_link if contact.twitter_account_link.present? %>
+          <%= link_to "Facebook", contact.facebook_account_link if contact.facebook_account_link.present? %>
+          <%= link_to "LinkedIn", contact.linkedin_account_link if contact.linkedin_account_link.present? %>
+          <%= link_to "Google Plus", contact.gplus_account_link if contact.gplus_account_link.present? %>
+          <%= link_to "GitHub", contact.github_account_link if contact.github_account_link.present? %>
+        </td>
+        <td><%= contact.company %></td>
+        <td><%= contact.phone %></td>
+        <td><%= contact.email %></td>
+        <td>
+          <%= link_to "View", user_contact_path(current_user, contact) %>
+          <%= link_to "Edit", edit_user_contact_path(current_user, contact) %>
+          <%= link_to "Delete", [ current_user, contact ], confirm: "Are you sure?", method: :delete  %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
 <% else %>
   <p>You have no contacts. To add some click the "Add Contact" button.</p>
-  <%= link_to "Add Contact", new_user_contact_path(@user), class: "btn btn-default" %>
 <% end %>
