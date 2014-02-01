@@ -1,5 +1,5 @@
 class Contact < ActiveRecord::Base
-  belongs_to :contacts
+  belongs_to :user
   has_many :social_accounts
 
   def prefix_options
