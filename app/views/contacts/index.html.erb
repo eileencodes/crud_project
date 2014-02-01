@@ -26,7 +26,7 @@
         <td>
           <%= link_to "View", user_contact_path(current_user, contact) %>
           <%= link_to "Edit", edit_user_contact_path(current_user, contact) %>
-          <%= link_to "Delete", [ current_user, contact ], confirm: "Are you sure?", method: :delete  %>
+          <%= link_to "Delete", [ current_user, contact ], data: { confirm: "Are you sure?" }, method: :delete  %>
         </td>
       </tr>
     <% end %>
