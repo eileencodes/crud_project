@@ -1,1 +1,53 @@
-show
+<h1><%= @contact.full_name %>'s Contact Details
+  <%= link_to "Edit", edit_user_contact_path(current_user, @contact), class: "btn btn-defaulti btn-success" %>
+  <%= link_to "Delete", [ current_user, @contact ], data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-default btn-danger"  %>
+</h1>
+<table class="table">
+  <colgroup>
+    <col class="col-xs-1">
+    <col class="col-xs-7">
+  </colgroup>
+  <tr>
+    <th>Name</th>
+    <td><%= @contact.full_name %></td>
+  </tr>
+  <tr>
+    <th>Birthday</th>
+    <td><%= @contact.birthday %></td>
+  </tr>
+  <tr>
+    <th>Phone</th>
+    <td><%= @contact.phone %></td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td><%= @contact.email %></td>
+  </tr>
+  <tr>
+    <th>Profiles</th>
+    <td>
+      <%= link_to "Twitter", @contact.twitter_account_link, target: "_blank" %> |
+      <%= link_to "Facebook", @contact.facebook_account_link, target: "_blank" %> |
+      <%= link_to "LinkedIn", @contact.linkedin_account_link, target: "_blank" %> |
+      <%= link_to "Google Plus", @contact.gplus_account_link, target: "_blank" %> |
+      <%= link_to "Github", @contact.github_account_link, target: "_blank" %>
+    </td>
+  </tr>
+  <tr>
+  <tr>
+    <th>Address</th>
+    <td><%= @contact.address %></td>
+  </tr>
+  <tr>
+    <th>Company</th>
+    <td><%= @contact.company %></td>
+  </tr>
+  <tr>
+    <th>Company Phone</th>
+    <td><%= @contact.company_phone %></td>
+  </tr>
+  <tr>
+    <th>Company Address</th>
+    <td><%= @contact.company_address %></td>
+  </tr>
+</table>
