@@ -1,6 +1,6 @@
 <h1><%= @contact.full_name %>'s Contact Details
-  <%= link_to "Edit", edit_user_contact_path(current_user, @contact), class: "btn btn-defaulti btn-success" %>
-  <%= link_to "Delete", [ current_user, @contact ], data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-default btn-danger"  %>
+  <%= link_to "Edit", edit_user_contact_path(current_user, @contact), class: "btn btn-success" %>
+  <%= link_to "Delete", [ current_user, @contact ], data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-danger"  %>
 </h1>
 <table class="table">
   <colgroup>

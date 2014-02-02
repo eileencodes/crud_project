@@ -1,4 +1,4 @@
-<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn btn-default pull-right btn-success" %>
+<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
 <br />
 <% if current_user.contacts.any? %>
   <table class="table table-condensed table-hover">
@@ -34,4 +34,4 @@
 <% else %>
   <p>You have no contacts. To add some click the "Add Contact" button.</p>
 <% end %>
-<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn btn-default pull-right btn-success" %>
+<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
