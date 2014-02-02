@@ -7,12 +7,19 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-
+  <header class="navbar navbar-default">
+    <div class="container">
+      <%= link_to "#{current_user.full_name}'s Address Book", root_url, class: "navbar-brand" %>
+      <ul class="nav navbar-nav pull-right">
+        <li><%= link_to "Edit Profile", edit_user_path(current_user) %></li>
+        <li><%= link_to "Contacts", user_contacts_path(current_user) %></li>
+      </ul>
+    </div>
+  </header>
   <div class="container">
     <%= flash[:notice] %>
     <%= flash[:error] %>
     <%= yield %>
   </div>
-
 </body>
 </html>

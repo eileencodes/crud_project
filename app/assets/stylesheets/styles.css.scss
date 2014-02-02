@@ -1,7 +1,19 @@
+@import "bootstrap";
+
 .half-col {
   width:50%;
   float:left;
   padding:0px 20px;
 }
 
-@import "bootstrap";
+h1 {
+  font-size:24px;
+}
+
+table {
+  margin-top:20px;
+}
+
+input.submit {
+  margin-top:20px;
+}

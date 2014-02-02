@@ -24,7 +24,7 @@ module ApplicationHelper
 
     def submit_tag(name, options = {})
       class_name = options[:class]
-      options[:class] = "btn btn-default"
+      options[:class] = "btn btn-default pull-right btn-success submit"
       super
     end
   end
