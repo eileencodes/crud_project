@@ -9,11 +9,15 @@
 <body>
   <header class="navbar navbar-default">
     <div class="container">
-      <%= link_to "#{current_user.full_name}'s Address Book", root_url, class: "navbar-brand" %>
-      <ul class="nav navbar-nav pull-right">
-        <li><%= link_to "Edit Profile", edit_user_path(current_user) %></li>
-        <li><%= link_to "Contacts", user_contacts_path(current_user) %></li>
-      </ul>
+      <% if current_user %>
+        <%= link_to "#{current_user.full_name}'s Address Book", user_contacts_path(current_user), class: "navbar-brand" %>
+        <ul class="nav navbar-nav pull-right">
+          <li><%= link_to "Edit Profile", edit_user_path(current_user) %></li>
+          <li><%= link_to "Contacts", user_contacts_path(current_user) %></li>
+        </ul>
+      <% else %>
+        <%= link_to "Address Book", root_url, class: "navbar-brand" %>
+      <% end %>
     </div>
   </header>
   <div class="container">
