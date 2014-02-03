@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140201213034) do
+ActiveRecord::Schema.define(version: 20140202171934) do
 
   create_table "contacts", force: true do |t|
     t.string  "first_name"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20140201213034) do
     t.string  "linkedin_account_link"
     t.string  "gplus_account_link"
     t.string  "github_account_link"
+    t.string  "title"
   end
 
   create_table "users", force: true do |t|
