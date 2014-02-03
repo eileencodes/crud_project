@@ -1,6 +1,5 @@
 class Contact < ActiveRecord::Base
   belongs_to :user
-  has_many :social_accounts
 
   def prefix_options
     [['Mr.', 'Mr.'], ['Mrs.', 'Mrs.'], ['Ms.', 3], ['Miss', 4]]
