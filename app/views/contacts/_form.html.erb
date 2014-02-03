@@ -21,7 +21,7 @@
       </div>
     </div>
     <%= f.label :birthday %><br />
-    <%= f.datetime_select :birthday %><br />
+    <%= f.date_select :birthday, start_year: 1910 %><br />
     <%= f.label :phone %>
     <%= f.text_field :phone %>
     <%= f.label :email %>
@@ -70,6 +70,8 @@
     </div>
     <%= f.label :company %>
     <%= f.text_field :company %>
+    <%= f.label :title %>
+    <%= f.text_field :title %>
     <%= f.label :comapny_address_1 %>
     <%= f.text_field :company_address_1 %>
     <%= f.label :company_address_2 %>
