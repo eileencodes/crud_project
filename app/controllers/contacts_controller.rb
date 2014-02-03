@@ -2,7 +2,7 @@ class ContactsController < ApplicationController
   include ApplicationHelper
 
   def index
-    @contacts = current_user.contacts
+    @contacts = current_user.contacts.page(params[:page])
   end
 
   def new
