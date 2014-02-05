@@ -13,6 +13,7 @@
         <%= link_to "#{current_user.full_name}'s Address Book", user_contacts_path(current_user), class: "navbar-brand" %>
         <ul class="nav navbar-nav pull-right">
           <li><%= link_to "Edit Profile", edit_user_path(current_user) %></li>
+          <li><%= link_to "Categories", user_categories_path(current_user) %></li>
           <li><%= link_to "Contacts", user_contacts_path(current_user) %></li>
         </ul>
       <% else %>
