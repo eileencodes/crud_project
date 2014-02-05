@@ -1,0 +1,11 @@
+<% if @categories.any? %>
+  <% @categories.each do |category| %>
+    <p><%= link_to category.name, user_category_path(current_user, category) %><br />
+      <%= category.description %><br />
+      <%= category.contacts.size %>
+    </p>
+  <% end %>
+<% else %>
+  You have no categories, create some.
+  Add button.
+<% end %>
