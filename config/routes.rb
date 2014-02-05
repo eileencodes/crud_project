@@ -1,5 +1,6 @@
 BigRubyConf2014::Application.routes.draw do
   resources :users do
+    resources :categories
     resources :contacts
   end
 
