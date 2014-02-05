@@ -1,6 +1,6 @@
-<%= paginate @contacts %>
 <%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
 <% if current_user.contacts.any? %>
+  <%= paginate @contacts %>
   <table class="table table-condensed table-hover">
     <tr>
       <th>Name</th>
@@ -31,8 +31,8 @@
       </tr>
     <% end %>
   </table>
+  <%= paginate @contacts %>
 <% else %>
   <p>You have no contacts. To add some click the "Add Contact" button.</p>
 <% end %>
 <%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
-<%= paginate @contacts %>

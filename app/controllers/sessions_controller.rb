@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
     user = User.find_by_email(params[:email])
     if user && user.authenticate(params[:password])
       session[:user_id] = user.id
-      redirect_to user_contacts_path(user.id), notice: 'You have been logged in!'
+      redirect_to edit_user_path(user.id), notice: 'You have been logged in!'
     else
       flash[:notice] = 'Your username or password is incorrect'
       redirect_to root_url

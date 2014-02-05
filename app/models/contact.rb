@@ -3,7 +3,7 @@ class Contact < ActiveRecord::Base
   has_many :categories, through: :categorizations
 
   def prefix_options
-    [['Mr.', 'Mr.'], ['Mrs.', 'Mrs.'], ['Ms.', 3], ['Miss', 4]]
+    [['Mr.', 'Mr.'], ['Mrs.', 'Mrs.'], ['Ms.', 'Ms.'], ['Miss', 'Miss']]
   end
 
   def full_name
