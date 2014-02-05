@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   has_secure_password
-  has_many :contacts
+  has_many :categories
 
   def full_name
     if self.first_name && self.last_name
