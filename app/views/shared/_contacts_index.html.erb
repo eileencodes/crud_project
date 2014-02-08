@@ -8,6 +8,7 @@
       <th>Company</th>
       <th>Phone</th>
       <th>Email</th>
+      <th>Categories</th>
       <th>Actions</th>
     </tr>
     <% @contacts.each do |contact| %>
@@ -23,6 +24,11 @@
         <td><%= contact.company %></td>
         <td><%= contact.phone %></td>
         <td><%= contact.email %></td>
+        <td>
+          <% contact.categories.each do |category| %>
+            <%= link_to category.name, user_category_path(current_user, category) %><br />
+          <% end %>
+        </td>
         <td>
           <%= link_to "View", user_contact_path(current_user, contact) %>
           <%= link_to "Edit", edit_user_contact_path(current_user, contact) %>
