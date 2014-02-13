@@ -1,4 +1,29 @@
-== README
+== What to do When ActiveRecord, MySQL, and Your Data Betray You
 
-Project for pairing sessions for Hackers in Residence program
-at Big Ruby Conf 2014.
+This project is an example application to demonstrate the issues
+I will be discussing in one-on-one pairing sessions at the
+Big Ruby Conference help on Feb 20th - Feb 21, 2014 in
+Dallas, TX.
+
+The application goes through each CRUD function
+Create
+READ
+Update
+Delete
+and gives an example for an "oh_crud" function (which is a
+dangerous or inefficient query) and a better optimized
+query. Generally small amounts of data, 0-3000 records
+won't demonstrate the problems well.
+
+I recommend using 10,000 or more records to really see the
+problems with these queries. Some you may not want to actually
+run because the server or MySQL may crash, but I'll go into
+that specifically in each function.
+
+= CREATE
+
+= READ
+
+= UPDATE
+
+= DELETE
