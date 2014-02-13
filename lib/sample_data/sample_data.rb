@@ -36,7 +36,6 @@ module SampleData
 
   def self.create_contacts
     contact_values = []
-    categorization_values = []
     CSV.foreach("#{Rails.root}/lib/sample_data/contacts.csv", headers: true) do |csv|
       contact_values << "('#{csv[0]}','#{csv[1]}','#{csv[2]}','#{csv[3]}','#{csv[4]}','#{csv[5]}','#{csv[6]}','#{csv[7]}','#{csv[8]}','#{csv[9]}','#{csv[10]}','#{csv[11]}','#{csv[12]}','#{csv[13]}','#{csv[14]}','#{csv[15]}','#{csv[16]}','#{csv[17]}','#{csv[18]}','#{csv[19]}','#{csv[20]}','#{csv[21]}','#{csv[22]}','#{csv[23]}','#{csv[24]}')"
     end
