@@ -6,10 +6,11 @@ Big Ruby Conference help on Feb 20th - Feb 21, 2014 in
 Dallas, TX.
 
 The application goes through each CRUD function
-Create
-READ
-Update
-Delete
+- Create
+- Read
+- Update
+- Delete
+
 and gives an example for an "oh\_crud" function (which is a
 dangerous or inefficient query) and a better optimized
 query. Generally small amounts of data, 0-3000 records
