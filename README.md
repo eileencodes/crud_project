@@ -1,4 +1,4 @@
-== What to do When ActiveRecord, MySQL, and Your Data Betray You
+## What to do When ActiveRecord, MySQL, and Your Data Betray You
 
 This project is an example application to demonstrate the issues
 I will be discussing in one-on-one pairing sessions at the
@@ -10,7 +10,7 @@ Create
 READ
 Update
 Delete
-and gives an example for an "oh_crud" function (which is a
+and gives an example for an "oh\_crud" function (which is a
 dangerous or inefficient query) and a better optimized
 query. Generally small amounts of data, 0-3000 records
 won't demonstrate the problems well.
@@ -20,11 +20,11 @@ problems with these queries. Some you may not want to actually
 run because the server or MySQL may crash, but I'll go into
 that specifically in each function.
 
-=== Let's Make Some Data
+### Let's Make Some Data
 
 This application uses Ruby 1.9.3 and Rails 4.0.2.
 
-In lib/sample_data/sample_data.rb are all the scripts to
+In `lib/sample_data/sample_data.rb` are all the scripts to
 create the data to be used for each demonstrating function.
 
 To create the CSV that will be used in the create method run
@@ -44,10 +44,10 @@ After we run the create method we'll need to run another one
 so that the categories and categorizations are set up for
 Read, Update, and Delete.
 
-=== CREATE
+### Create
 
-=== READ
+### Read
 
-=== UPDATE
+### Update
 
-=== DELETE
+### Delete
