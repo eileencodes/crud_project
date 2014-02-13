@@ -20,6 +20,30 @@ problems with these queries. Some you may not want to actually
 run because the server or MySQL may crash, but I'll go into
 that specifically in each function.
 
+=== Let's Make Some Data
+
+This application uses Ruby 1.9.3 and Rails 4.0.2.
+
+In lib/sample_data/sample_data.rb are all the scripts to
+create the data to be used for each demonstrating function.
+
+To create the CSV that will be used in the create method run
+the following command from your rails console.
+
+```ruby
+SampleData.create_contacts_csv(10000, "contacts.csv", 1)
+```
+
+The first parameter is the amount, the second is the filename, and
+the third is which user to associate the contacts with.
+
+The CSV function uses the Faker gem to create the data for the
+contacts.
+
+After we run the create method we'll need to run another one
+so that the categories and categorizations are set up for
+Read, Update, and Delete.
+
 === CREATE
 
 === READ
