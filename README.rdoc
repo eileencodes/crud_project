@@ -20,10 +20,10 @@ problems with these queries. Some you may not want to actually
 run because the server or MySQL may crash, but I'll go into
 that specifically in each function.
 
-= CREATE
+=== CREATE
 
-= READ
+=== READ
 
-= UPDATE
+=== UPDATE
 
-= DELETE
+=== DELETE
