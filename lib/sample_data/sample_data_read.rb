@@ -12,7 +12,7 @@ module SampleDataRead
     end
   end
 
-  def self.read_contacts_alt
+  def self.read_contacts_optimized_alt
     Contact.select(:first_name).each do |contact|
       puts contact.first_name
     end

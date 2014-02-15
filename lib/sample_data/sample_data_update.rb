@@ -5,7 +5,7 @@ module SampleDataUpdate
     end
   end
 
-  def self.update_contacts(category)
+  def self.update_contacts_optimized(category)
     Categorization.update_all(:category_id => category.id)
   end
 end
