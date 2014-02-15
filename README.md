@@ -124,7 +124,79 @@ values line up perfectly with the MySQL columns, but the savings are tremendous!
 If you have a lot of data that needs to be created at once in MySQL, batch insert
 will likely be your best bet.
 
+Before we can continue we need to set up the relationships between contacts and
+categories. These will be used later in the exercise and can be found in the
+SampleDataSetup module. The way these relationships are created is for ease of
+explanation and not the way it would be done in a live application. Simply run:
+```ruby
+SampleDataSetup.create_categories_and_relationships
+```
+
 ### Read
+
+Now that we have our data, let's read it. Let's say we want to get all of our
+contacts first names. Generally we would run a simple each block on all contacts:
+
+```ruby
+SampleDataRead.read_contacts_oh_crud
+```
+which looks like this:
+```ruby
+  def self.read_contacts_oh_crud
+    Contact.where(:user_id => 1).each do |contact|
+      puts contact.first_name
+    end
+  end
+```
+And it benchmarks at:
+```
+=>   0.920000   0.060000   0.980000 (  1.010865)
+```
+
+Simple enough. Not slow at all, but let's see if we can't speed this up. Let's try using `find\_each`
+instead of `each`. `find\_each` will collect the records in batches of 1000. What's interesting though
+without the where if we were to just ask for `Contact.all.each` turned out in Rails 4 to actually be
+a little faster than `Contact.all.find\_each`. When using where though MySQL must search the records
+instead of just grabbing them all at once. Also as we increase records from say 10k to 100k the results
+will be very different.
+
+So let's run the next method:
+```ruby
+SampleDataRead.read_contacts_optimized
+```
+which looks like:
+```ruby
+  def self.read_contacts_optimized
+    Contact.where(:user_id => 1).find_each do |contact|
+      puts contact.first_name
+    end
+  end
+```
+This one benchmarks at:
+```
+ =>   0.880000   0.050000   0.930000 (  0.963246)
+```
+Again, the small amount of data doesn't really show a drastic difference.
+So, if we look at our query we're only getting one column, why collect
+the entire record? Although this doesn't happen often we can grab just one
+column with the `select` Arel clause:
+```ruby
+SampleDataRead.read_contacts_optimized_alt
+```
+which looks like:
+```ruby
+  def self.read_contacts_optimized_alt
+    Contact.select(:first_name).each do |contact|
+      puts contact.first_name
+    end
+  end
+```
+and benchmarks at:
+```
+=>   0.470000   0.040000   0.510000 (  0.520477)
+```
+This one makes it easier to actually see the improvement. With 100k
+records this will save your database a LOT of time.
 
 ### Update
 
