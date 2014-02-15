@@ -34,7 +34,7 @@ To create the CSV that will be used in the create method run
 the following command from your rails console.
 
 ```ruby
-SampleData.create_contacts_csv(10000, "contacts.csv", 1)
+SampleDataSetup.create_contacts_csv(10000, "contacts.csv", 1)
 ```
 
 The first parameter is the amount, the second is the filename, and
@@ -59,7 +59,7 @@ a function that is not available in ActiveRecord.
 Let's run the oh\_crud version.
 
 ```ruby
-SampleData.create_contacts_oh_crud
+SampleDataCreate.create_contacts_oh_crud
 ```
 
 Now this method likely won't blow up with 10k records, but when you get
@@ -69,7 +69,7 @@ sitting there for hours waiting for it to load.
 If we run the method with the benchmark this will be the result:
 
 ```ruby
-Benchmark.measure { SampleData.create_contacts_oh_crud }
+Benchmark.measure { SampleDataCreate.create_contacts_oh_crud }
          user     system      total         real
 =>  44.740000   1.180000  45.920000 ( 51.095556)
 ```
@@ -80,12 +80,12 @@ restart the console (`rails c -s`) which will rollback your changes.
 
 ```ruby
 Contact.delete_all
-SampleData.create_contacts
+SampleDataCreate.create_contacts_optimized
 ```
 
 And if we measure the other create method as we run it:
 ```ruby
-Benchmark.measure { SampleData.create_contacts }
+Benchmark.measure { SampleDataCreate.create_contacts_optimized }
          user     system      total         real
 =>   2.710000   0.050000   2.760000 (  3.227031)
 ```
