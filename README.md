@@ -200,4 +200,58 @@ records this will save your database a LOT of time.
 
 ### Update
 
+Oh no! We set all of our contacts to the wrong category! We need a quick way
+to update all of them. We could go through each category and update them.
+The following method will do this for us:
+
+```ruby
+category = Category.first
+SampleDataupdate.update_contacts_oh_crud(category)
+```
+
+which becomes:
+```ruby
+def self.update_contacts_oh_crud(category)
+  Categorization.all.each do |categorization|
+    categorization.update_attributes(:category_id => category.id)
+  end
+end
+```
+But this is going to take a long time. It benchmarks at:
+```
+=>  13.170000   1.280000  14.450000 ( 18.640788)
+```
+
+This takes so long because ActiveRecord instantiates and
+updates each individual object before it updates it. But
+all the records are getting the same update so maybe there
+is a better way that will update them all at once.
+
+If we run this command:
+
+```ruby
+category = Category.where(:name => "Coworkers").first
+SampleDataUpdate.update_contacts_optimized(category)
+```
+which outputs:
+
+```ruby
+def self.update_contacts_optimized(category)
+  Categorization.update_all(:category_id => category.id)
+end
+```
+and benchmarks at:
+```
+=>   0.000000   0.000000   0.000000 (  0.042140)
+```
+
+Instead of running through each object and updating them it produces
+a one line udpate in SQL:
+```
+UPDATE `categorizations` SET `categorizations`.`category_id` = 15
+```
+which updates all the records at once.
+
+This optimized method provides huge time savings for your queries.
+
 ### Delete
