@@ -16,7 +16,7 @@ module SampleDataDelete
   # although category.categorizations.delete_all is valid
   # I prefer this way, faster and more reliable.
   def self.delete_categorizations_optimized(category)
-    Categorization.where(:category_id => cat.id).delete_all
+    Categorization.where(:category_id => category.id).delete_all
   end
 
   def self.delete_contacts_optimized(category)
