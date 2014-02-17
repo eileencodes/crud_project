@@ -11,7 +11,7 @@ The application goes through each CRUD function
 - Update
 - Delete
 
-and gives an example for an "oh\_crud" problem (which is a
+and gives an example for an "oh_crud" problem (which is a
 dangerous or inefficient query) and a better optimized
 query. Often we assume that ActiveRecord knows best. If we really
 look at our queries we may discover that returned MySQL is not what
@@ -22,6 +22,12 @@ the problems well.I recommend using 10,000 or more records to really
 see the problems with these queries. Some you may not want to actually
 run because the server or MySQL may crash, but I'll go into
 that specifically in each function.
+
+We will go over each CRUD function and explore the consequences of
+chaining, uses for Arel (A Relational Albegra) and even write
+raw SQL statements. Some of the examples will be based soley on producing
+faster queries, others will expore some assumptions we might make while
+writing out ActiveRecord queries.
 
 ### Let's Make Some Data
 
@@ -55,7 +61,7 @@ The module demonstrates two creation methods. One that is uses the
 standard create! while the other demonstrates MySQL's Batch Insert -
 a function that is not available in ActiveRecord.
 
-Let's run the oh\_crud version.
+Let's run the oh_crud version.
 
 ```ruby
 SampleDataCreate.create_contacts_oh_crud
@@ -160,7 +166,7 @@ SampleDataRead.read_contacts_oh_crud
 which looks like this:
 ```ruby
 def self.read_contacts_oh_crud
-  Contact.where(:user_id => 1).each do |contact|
+  Contact.where(:user_id => 1, :country => "USA").each do |contact|
     puts contact.first_name
   end
 end
@@ -168,7 +174,7 @@ end
 And it benchmarks at:
 ```
          user     system      total         real
-=>   0.920000   0.060000   0.980000 (  1.010865)
+=>   0.910000   0.050000   0.960000 (  0.997945)
 ```
 
 Simple enough. Not slow at all, but let's see if we can't speed this up. Let's try
@@ -185,19 +191,25 @@ SampleDataRead.read_contacts_optimized
 ```
 which looks like:
 ```ruby
-  def self.read_contacts_optimized
-    Contact.where(:user_id => 1).find_each do |contact|
-      puts contact.first_name
-    end
+def self.read_contacts_optimized
+  Contact.where(:user_id => 1, :country => "USA").find_each do |contact|
+    puts contact.first_name
   end
+end
 ```
-This one benchmarks at:
+This one actually benchmarks a tad higher the first time it's run:
 ```
-         user     system      total         real
- =>   0.880000   0.050000   0.930000 (  0.963246)
+        user     system      total         real
+=>   0.910000   0.050000   0.960000 (  0.990555)
 ```
-Again, the small amount of data doesn't really show a drastic difference.
-So, if we look at our query we're only getting one column, why collect
+
+It's hard to see the savings here, it's almost negilble. Interestingly,
+as the query becomes more complicated the savings are more and more
+noticble. I actually found (contrary to the Rails docs) that `Contact.all.each`
+ran faster than `Contact.all.find_each`.
+
+So, let's look at the data we want. We're actually only outputting only one
+column so why collect the entire record? There's an even faster way to
 the entire record? Although this doesn't happen often we can grab just one
 column with the `select` Arel clause:
 ```ruby
@@ -205,16 +217,16 @@ SampleDataRead.read_contacts_optimized_alt
 ```
 which looks like:
 ```ruby
-  def self.read_contacts_optimized_alt
-    Contact.select(:first_name).each do |contact|
-      puts contact.first_name
-    end
+def self.read_contacts_optimized_alt
+  Contact.where(:user_id => 1, :country => "USA").select(:first_name).each do |contact|
+    puts contact.first_name
   end
+end
 ```
 and benchmarks at:
 ```
          user     system      total         real
-=>   0.470000   0.040000   0.510000 (  0.520477)
+=>   0.560000   0.040000   0.600000 (  0.620693)
 ```
 This one makes it easier to actually see the improvement. With 100k
 records this will save your database a LOT of time.
@@ -244,10 +256,9 @@ But this is going to take a long time. It benchmarks at:
 =>  13.170000   1.280000  14.450000 ( 18.640788)
 ```
 
-This takes so long because ActiveRecord instantiates and
-updates each individual object before it updates it. But
-all the records are getting the same update so maybe there
-is a better way that will update them all at once.
+This takes so long because ActiveRecord instantiates and updates each individual
+object before it updates it. But all the records are getting the same update so
+maybe there is a better way that will update them all at once.
 
 If we run this command:
 
@@ -255,14 +266,14 @@ If we run this command:
 category = Category.where(:name => "Coworkers").first
 SampleDataUpdate.update_contacts_optimized(category)
 ```
-which outputs:
+which is doing the following:
 
 ```ruby
 def self.update_contacts_optimized(category)
   Categorization.update_all(:category_id => category.id)
 end
 ```
-and benchmarks at:
+and benchmarks it at:
 ```
          user     system      total         real
 =>   0.000000   0.000000   0.000000 (  0.042140)
@@ -271,7 +282,7 @@ and benchmarks at:
 Instead of running through each object and updating them it produces
 a one line udpate in SQL:
 ```
-UPDATE `categorizations` SET `categorizations`.`category\_id` = 15
+UPDATE `categorizations` SET `categorizations`.`category_id` = 15
 ```
 which updates all the records at once.
 
@@ -279,13 +290,16 @@ This optimized method provides huge time savings for your queries.
 
 ### Delete
 
-Now it's time to destroy records. Many developers would just run
-`destroy\_all` on the model and call it a day. But what if you want to
-destroy related records? Associations with 10k records won't break
-MySQL but it will run slowly. With 100k records though, I've killed
-MySQL. That's not great. We never want our queries to be so overloading
-to the database that it just goes away. The problem with `destroy\_all`
+Now it's time to destroy records. Many developers would just run `destroy_all` on
+the model and call it a day. But what if you want to destroy related records?
+Associations with 10k records won't break MySQL but it will run slowly. With 100k
+records though, I've killed MySQL. That's not great. We never want our queries to
+be so overloading to the database that it just goes away. The problem with `destroy_all`
 is like our update methods above instantiates each object.
+
+For these examples I recommend running rails console in sandbox mode (`rails c -s`)
+because then we can easily rollback our changes by exiting instead of re-running
+the create command.
 
 A destroy all might look like this:
 ```ruby
@@ -293,7 +307,7 @@ SampleDataDelete.destroy_contacts_oh_crud(category)
 
 which will run:
 ```ruby
-category.contacts.destroy\_all
+category.contacts.destroy_all
 ```
 This will instantiate and delete each individual categorization record.
 And it's benchmark demonstrates exactly how slow this is:
@@ -304,67 +318,86 @@ And it's benchmark demonstrates exactly how slow this is:
 
 Now we could just change the query to:
 ```ruby
-category.contacts.delete\_all
+category.contacts.delete_all
 ```
 That produces interesing SQL that I didn't expect the first time I
 ran the same query:
 ```ruby
-Contact Load (54.1ms)  SELECT `contacts`.* FROM `contacts` INNER JOIN `categorizations` ON `contacts`.`id` = `categorizations`.`contact\_id` WHERE `categorizations`.`category\_id` = 3
-SQL (54.3ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category\_id` = 3 AND `categorizations`.`contact\_id` IN (1, 2, 3, 4, 5, 6, 7, 8,...10000)
+Contact Load (54.1ms)  SELECT `contacts`.* FROM `contacts` INNER JOIN `categorizations` ON `contacts`.`id` = `categorizations`.`contact_id` WHERE `categorizations`.`category_id` = 3
+SQL (54.3ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 3 AND `categorizations`.`contact_id` IN (1, 2, 3, 4, 5, 6, 7, 8,...10000)
 ```
 
-This is better because we aren't instantiating each object, but it's
-confusing to other developers what we're trying to delete here.
+This is better because we aren't instantiating each object, but it's confusing to
+other developers what we're trying to delete here.
 
 Updating this to delete the categorization instead is a lot less
 confusing, so we can run:
 ```ruby
 category.categorizations.delete_all
 ```
-But honestly I think it's better to go straight to the source when
-deleteing related objects. I recommend using the following:
+It's faster but this isn't exactly what we want. If we look athe the SQL that is
+produced we're going to wonder if there's an even faster way to run this query.
+The first time I ran this I expected the following SQL to be produced:
+```
+DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 10
+```
+Now this is what we get if the relationship between category and categorizations is
+not actually loaded. But since that's rarely the case here's what we actually get:
+```
+DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 10 AND `categorizations`.`id` IN (10001, 10002, 10003, 10004,...
+```
+Wat.
+
+Definitely not what I would have expected. After dealing with these types of issues
+at lot in the PhishMe application I decided it's better not to chain relationships
+when deleting records.
+
+The following example will show that deleting the object directly is faster, safer,
+and actually produces the above expected SQL output:
 
 If we run:
 ```ruby
 SampleDataDelete.delete_categorizations_optimized(category)
 ```
 
-which is:
+which does:
 ```ruby
 Categorization.where(:category_id => category.id).delete_all
 ```
 
 and produces the following MySQL and benchmark:
 ```ruby
-SQL (38.0ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category\_id` = 3
+SQL (38.0ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 3
          user     system      total         real
 =>   0.010000   0.000000   0.010000 (  0.043482)
 ```
 
-The above is very clear what exactly we want from ActiveRecord and
-that we expect all categorizations with the category id to be
-deleted.
+The above is very clear what exactly we want from ActiveRecord and that we expect
+all categorizations with the category id to be deleted.
 
-Now what if we really did want to delete contacts? Well there are lots
-of ways to do this but a simple join will be relatively quick and
-also be super clear like the above query.
+Now what if we really did want to delete all contacts that belonged to a specific
+category? Well there are lots of ways to do this but a simple join will be relatively
+quick and also be super clear about our intentions like the above query.
 
 If we run:
 ```ruby
 SampleDataDelete.delete_contacts_optimized(category)
 ```
-which is:
+which performs:
 ```ruby
 Contact.joins(:categorizations).where('categorizations.category_id' => category.id).delete_all
 ```
 and is translated into MySQL and benchmarks at:
 ```ruby
-SQL (2114.8ms)  DELETE FROM `contacts` WHERE `contacts`.`id` IN (SELECT id FROM (SELECT `contacts`.`id` FROM `contacts` INNER JOIN `categorizations` ON `categorizations`.`contact\_id` = `contacts`.`id` WHERE `categorizations`.`category\_id` = 3) __active_record_temp)
+SQL (2114.8ms)  DELETE FROM `contacts` WHERE `contacts`.`id` IN (SELECT id FROM (SELECT `contacts`.`id` FROM `contacts` INNER JOIN `categorizations` ON `categorizations`.`contact_id` = `contacts`.`id` WHERE `categorizations`.`category_id` = 3) __active_record_temp)
          user     system      total         real
 =>   0.050000   0.010000   0.060000 (  2.170937)
 ```
 
-All of these suggestion also depend on your applications needs. It's
-important to keep in mind that with `delete\_all` will not fire callbacks
-so dependent associations may not be deleted as expected. Testing your
-queries is best.
+All of these suggestions depend on your applications needs. It's important to keep
+in mind that with `delete_all` will not fire callbacks so dependent associations will
+not be deleted as expected.
+
+It's important to keep in mind that we may be making assumptions about our query output
+when using ActiveRecord. It's an amazing tool but there is a lot of magic behind the
+scenes that can be detrmintal to your application if not used properly.
