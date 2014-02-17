@@ -46,9 +46,26 @@ module SampleDataSetup
     end
   end
 
+  def self.build_everything
+    create_contacts_optimized
+    create_categories
+    create_categorizations
+  end
+
   def self.create_categories_and_relationships
     create_categories
     create_categorizations
+  end
+
+  def self.tear_down_everything
+    Contact.delete_all
+    Category.delete_all
+    Categorization.delete_all
+  end
+
+  def self.tear_down_categories_and_relationships
+    Category.delete_all
+    Categorization.delete_all
   end
 
 end
