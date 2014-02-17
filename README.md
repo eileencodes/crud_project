@@ -150,6 +150,7 @@ which looks like this:
 ```
 And it benchmarks at:
 ```
+         user     system      total         real
 =>   0.920000   0.060000   0.980000 (  1.010865)
 ```
 
@@ -174,6 +175,7 @@ which looks like:
 ```
 This one benchmarks at:
 ```
+         user     system      total         real
  =>   0.880000   0.050000   0.930000 (  0.963246)
 ```
 Again, the small amount of data doesn't really show a drastic difference.
@@ -193,6 +195,7 @@ which looks like:
 ```
 and benchmarks at:
 ```
+         user     system      total         real
 =>   0.470000   0.040000   0.510000 (  0.520477)
 ```
 This one makes it easier to actually see the improvement. With 100k
@@ -219,6 +222,7 @@ end
 ```
 But this is going to take a long time. It benchmarks at:
 ```
+         user     system      total         real
 =>  13.170000   1.280000  14.450000 ( 18.640788)
 ```
 
@@ -242,13 +246,14 @@ end
 ```
 and benchmarks at:
 ```
+         user     system      total         real
 =>   0.000000   0.000000   0.000000 (  0.042140)
 ```
 
 Instead of running through each object and updating them it produces
 a one line udpate in SQL:
 ```
-UPDATE `categorizations` SET `categorizations`.`category_id` = 15
+UPDATE `categorizations` SET `categorizations`.`category\_id` = 15
 ```
 which updates all the records at once.
 
