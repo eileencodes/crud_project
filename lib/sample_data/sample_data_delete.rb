@@ -9,6 +9,10 @@ module SampleDataDelete
     category.contacts.delete_all
   end
 
+  def self.delete_categorizations_optimized_alt(category)
+    category.categorizations.delete_all
+  end
+
   # although category.categorizations.delete_all is valid
   # I prefer this way, faster and more reliable.
   def self.delete_categorizations_optimized(category)
@@ -16,6 +20,6 @@ module SampleDataDelete
   end
 
   def self.delete_contacts_optimized(category)
-    Contact.joins(:categorizations).where('categorizations.category_id' => cat.id).delete_all
+    Contact.joins(:categorizations).where('categorizations.category_id' => category.id).delete_all
   end
 end
