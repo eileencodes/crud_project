@@ -303,8 +303,8 @@ confusing, so we can run:
 ```ruby
 category.categorizations.delete_all
 ```
-But honestly it's better to go straight to the source when deleteing
-related objects. I recommend using the following:
+But honestly I think it's better to go straight to the source when
+deleteing related objects. I recommend using the following:
 
 If we run:
 ```ruby
@@ -316,7 +316,7 @@ which is:
 Categorization.where(:category_id => category.id).delete_all
 ```
 
-which produces the following MySQL and benchmark:
+and produces the following MySQL and benchmark:
 ```ruby
 SQL (38.0ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category\_id` = 3
          user     system      total         real
@@ -331,13 +331,13 @@ Now what if we really did want to delete contacts? Well there are lots
 of ways to do this but a simple join will be relatively quick and
 also be super clear like the above query.
 
-If we run
+If we run:
 ```ruby
 SampleDataDelete.delete_contacts_optimized(category)
 ```
-which is written as:
+which is:
 ```ruby
-Contact.joins(:categorizations).where('categorizations.category_id' => cat.id).delete_all
+Contact.joins(:categorizations).where('categorizations.category_id' => category.id).delete_all
 ```
 and is translated into MySQL and benchmarks at:
 ```ruby
