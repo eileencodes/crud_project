@@ -47,7 +47,7 @@ module SampleDataSetup
   end
 
   def self.build_everything
-    create_contacts_optimized
+    SampleDataCreate.create_contacts_optimized
     create_categories
     create_categorizations
   end
@@ -66,6 +66,16 @@ module SampleDataSetup
   def self.tear_down_categories_and_relationships
     Category.delete_all
     Categorization.delete_all
+  end
+
+  def self.rebuild_everything
+    tear_down_everything
+    build_everything
+  end
+
+  def self.redo_categories_and_relationships
+    tear_down_categories_and_relationships
+    create_categories_and_relationships
   end
 
 end
