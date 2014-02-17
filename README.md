@@ -2,7 +2,7 @@
 
 This project is an example application to demonstrate the issues
 I will be discussing in one-on-one pairing sessions at the
-Big Ruby Conference help on Feb 20th - Feb 21, 2014 in
+Big Ruby Conference held on Feb 20th - Feb 21, 2014 in
 Dallas, TX.
 
 The application goes through each CRUD function
@@ -11,13 +11,15 @@ The application goes through each CRUD function
 - Update
 - Delete
 
-and gives an example for an "oh\_crud" function (which is a
+and gives an example for an "oh\_crud" problem (which is a
 dangerous or inefficient query) and a better optimized
-query. Generally small amounts of data, 0-3000 records
-won't demonstrate the problems well.
+query. Often we assume that ActiveRecord knows best. If we really
+look at our queries we may discover that returned MySQL is not what
+we intended at all.
 
-I recommend using 10,000 or more records to really see the
-problems with these queries. Some you may not want to actually
+Generally small amounts of data, 0-3000 records won't demonstrate
+the problems well.I recommend using 10,000 or more records to really
+see the problems with these queries. Some you may not want to actually
 run because the server or MySQL may crash, but I'll go into
 that specifically in each function.
 
@@ -27,8 +29,9 @@ This application uses Ruby 1.9.3 and Rails 4.0.2. Of course
 `bundle install` and `rake db:migrate` must be run before
 this will work.
 
-In `lib/sample_data/sample_data.rb` are all the scripts to
-create the data to be used for each demonstrating function.
+`lib/sample_data/` contains all the scripts to
+create the data to be used for each demonstrating function
+and an example for each CRUD function.
 
 To create the CSV that will be used in the create method run
 the following command from your rails console.
@@ -42,10 +45,6 @@ the third is which user to associate the contacts with.
 
 The CSV function uses the Faker gem to create the data for the
 contacts.
-
-After we run the create method we'll need to run another one
-so that the categories and categorizations are set up for
-Read, Update, and Delete.
 
 ### Create
 
@@ -62,21 +61,40 @@ Let's run the oh\_crud version.
 SampleDataCreate.create_contacts_oh_crud
 ```
 
+This method runs through each row of the csv and creates the record:
+```ruby
+def self.create_contacts_oh_crud
+  CSV.foreach("#{Rails.root}/lib/sample_data/contacts.csv", headers: true) do |csv|
+    Contact.create!({
+      :first_name => csv[0],
+      :last_name => csv[1],
+      :birthday => csv[2],
+      ...
+      :user_id => csv[24]
+    })
+  end
+end
+```
+
 Now this method likely won't blow up with 10k records, but when you get
 closer to 100k records your time starts to suffer and you could be
-sitting there for hours waiting for it to load.
+sitting there for hours waiting for it to finish.
 
-If we run the method with the benchmark this will be the result:
+This method produces the following SQL and benchmarks at:
 
 ```ruby
-Benchmark.measure { SampleDataCreate.create_contacts_oh_crud }
+(0.2ms)  BEGIN
+SQL (0.6ms)  INSERT INTO `contacts` (`address_1`, `address_2`, `birthday`, `city`, `company`, `company_address_1`, `company_address_2`, `company_city`, `company_country`, `company_postal_code`, `company_state`, `country`, `email`, `facebook_account_link`, `first_name`, `github_account_link`, `gplus_account_link`, `last_name`, `linkedin_account_link`, `phone`, `postal_code`, `state`, `title`, `twitter_account_link`, `user_id`) VALUES ('6186 Charles Viaduct', 'Apt. 583', '1987-02-01', 'North Danikachester', 'Hickle LLC', '8904 Titus Squares', 'Apt. 371', 'West Otto', 'USA', '60254-1949', 'ID', 'USA', 'lauretta.senger.0@example.com', 'http://www.facebook.com/lauretta_0_sample', 'Lauretta', 'http://www.github.com/lauretta_0_sample', 'http://gplus.google.com/posts/lauretta_0_sample', 'Senger', 'http://www.linkedin.com/in/lauretta_0_sample', '1-439-658-7097 x274', '22882', 'AL', 'District Mobility Technician', 'http://www.twitter.com/lauretta_0_sample', 1)
+...
+
          user     system      total         real
 =>  44.740000   1.180000  45.920000 ( 51.095556)
 ```
 
+I didn't post all of the SQL, imagine it does that for all 10k records, one
+at a time. Oof.
+
 Now's let's delete that data and run the other create command.
-Alternatively you could be running the console in sandbox mode and
-restart the console (`rails c -s`) which will rollback your changes.
 
 ```ruby
 Contact.delete_all
@@ -85,7 +103,6 @@ SampleDataCreate.create_contacts_optimized
 
 And if we measure the other create method as we run it:
 ```ruby
-Benchmark.measure { SampleDataCreate.create_contacts_optimized }
          user     system      total         real
 =>   2.710000   0.050000   2.760000 (  3.227031)
 ```
@@ -98,9 +115,9 @@ by inserting all the records at once.
 is not instantiated and saved.**
 
 Instead of creating and saving each record the batch insert does
-exactly what it's name implies. There is no comprable method in
-ActiveRecord. Don't be scared to abandon AR, sometimes it's necessary
-and you're database will love you.
+exactly what it's name implies. There is no method in ActiveRecord
+that does exactly this. Don't be scared to abandon AR in the case,
+sometimes it's necessary and you're database will love you.
 
 To get the batch insert working we'll start with an empty array. As
 we read each line of the csv we will build an array of contact values.
@@ -111,9 +128,9 @@ with real data, this is just a demonstration.
 
 The array must be in quotes and surrounded by parentheses ex `"('data', 'data')"`.
 We then decide on a batch size - this is because even MySQL can't handle 10k
-records at once. After playing with a lot of different numbers this is where I
-found it to be most reliable, 2k records. We then shift those values in the while
-loop until it's empty.
+records at once. After playing with a lot of different numbers I found that 2k
+records was most reliable. We then shift those values in the while loop until it's
+empty.
 
 In the while loop we create the sql insert statement and join contacts_shifted
 for the values. Connect to mysql and excute.
@@ -142,11 +159,11 @@ SampleDataRead.read_contacts_oh_crud
 ```
 which looks like this:
 ```ruby
-  def self.read_contacts_oh_crud
-    Contact.where(:user_id => 1).each do |contact|
-      puts contact.first_name
-    end
+def self.read_contacts_oh_crud
+  Contact.where(:user_id => 1).each do |contact|
+    puts contact.first_name
   end
+end
 ```
 And it benchmarks at:
 ```
@@ -154,12 +171,13 @@ And it benchmarks at:
 =>   0.920000   0.060000   0.980000 (  1.010865)
 ```
 
-Simple enough. Not slow at all, but let's see if we can't speed this up. Let's try using `find\_each`
-instead of `each`. `find\_each` will collect the records in batches of 1000. What's interesting though
-without the where if we were to just ask for `Contact.all.each` turned out in Rails 4 to actually be
-a little faster than `Contact.all.find\_each`. When using where though MySQL must search the records
-instead of just grabbing them all at once. Also as we increase records from say 10k to 100k the results
-will be very different.
+Simple enough. Not slow at all, but let's see if we can't speed this up. Let's try
+using `find_each` instead of `each`. `find_each` will collect the records in
+batches of 1000. What's interesting though without the where if we were to just ask
+for `Contact.all.each` turned out in Rails 4 to actually be a little faster than
+`Contact.all.find_each`. When using where though MySQL must search the records
+instead of just grabbing them all at once. Also as we increase records from say
+10k to 100k the results will be very different.
 
 So let's run the next method:
 ```ruby
