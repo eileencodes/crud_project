@@ -262,66 +262,91 @@ This optimized method provides huge time savings for your queries.
 ### Delete
 
 Now it's time to destroy records. Many developers would just run
-`destroy\_all` on the model and call it a day. 10k records won't break
+`destroy\_all` on the model and call it a day. But what if you want to
+destroy related records? Associations with 10k records won't break
 MySQL but it will run slowly. With 100k records though, I've killed
 MySQL. That's not great. We never want our queries to be so overloading
 to the database that it just goes away. The problem with `destroy\_all`
-is like our update methods above instantiates each object. 
+is like our update methods above instantiates each object.
 
-That method is available as:
+A destroy all might look like this:
 ```ruby
-SamplDataDelete.delete_contacts_oh_crud(category)
-```
+SampleDataDelete.destroy_contacts_oh_crud(category)
 
-If there are no callbacks this doesn't make sense to do. It's a lot faster
-to just`delete\_all`. This method has it's caveats as well though and we need
-to make sure we're telling ActiveRecord exactly what we want. Let's say
-we want to delete all the categorizations a between contacts and a
-specific category. Easy right? We already have the category so
-let's just delete the categorzations assoicated with it.
-
+which will run:
 ```ruby
-SampleDataDelete.delete_contacts_oh_crud_alt(category)
+category.contacts.destroy\_all
 ```
-Instead of destroy all this runs delete all on the joined model
+This will instantiate and delete each individual categorization record.
+And it's benchmark demonstrates exactly how slow this is:
+```
+         user     system      total         real
+=> 132.980000   0.370000 133.350000 (133.996548)
+```
+
+Now we could just change the query to:
 ```ruby
-def self.delete_contacts_oh_crud_alt(category)
-  category.categorizations.delete_all
-end
+category.contacts.delete\_all
 ```
-What's most interesting about this method is how it's translated from ActiveRecord
-into MySQL. It becomes:
+That produces interesing SQL that I didn't expect the first time I
+ran the same query:
+```ruby
+Contact Load (54.1ms)  SELECT `contacts`.* FROM `contacts` INNER JOIN `categorizations` ON `contacts`.`id` = `categorizations`.`contact\_id` WHERE `categorizations`.`category\_id` = 3
+SQL (54.3ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category\_id` = 3 AND `categorizations`.`contact\_id` IN (1, 2, 3, 4, 5, 6, 7, 8,...10000)
 ```
-DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 21 AND `categorizations`.`id` IN (20001, 20002, 20003, 20004, 20005, 20006, 20007, 20008, 20009, 20010, 20011, 20012, 20013, 20014, 20015, 20016, 20017, 20018, 20019, 20020, 20021, 20022, 20023, 20024, 20025, 20026, 20027, 20028, 20029, 20030, 20031, 20032, 20033, 20034, 20035, 20036, 20037, 20038, 20039, 20040, 20041, 20042, 20043, 20044, 20045, 20046, 20047, 20048, 20049, 20050, 20051, 20052, 20053, 20054, 20055, 20056, 20057, 20058, 20059, 20060, 20061, 20062...etc
+
+This is better because we aren't instantiating each object, but it's
+confusing to other developers what we're trying to delete here.
+
+Updating this to delete the categorization instead is a lot less
+confusing, so we can run:
+```ruby
+category.categorizations.delete_all
 ```
-Definitely not what I expected the first time I ran this query. It's important
-that we know exactly what we're asking ActiveRecord to do. Assuming that the queries
-it produces will be best and benefit us can lead to some interesting consequences.
+But honestly it's better to go straight to the source when deleteing
+related objects. I recommend using the following:
 
-This query can hang for quite awhile as well. What's a better way to delete these
-related categorizations?
+If we run:
+```ruby
+SampleDataDelete.delete_categorizations_optimized(category)
+```
 
-I have found that it is better to collect the categorizations by category\_id rather
-than through the category.
+which is:
+```ruby
+Categorization.where(:category_id => category.id).delete_all
+```
 
-Let's look at the optimized method:
+which produces the following MySQL and benchmark:
+```ruby
+SQL (38.0ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category\_id` = 3
+         user     system      total         real
+=>   0.010000   0.000000   0.010000 (  0.043482)
+```
+
+The above is very clear what exactly we want from ActiveRecord and
+that we expect all categorizations with the category id to be
+deleted.
+
+Now what if we really did want to delete contacts? Well there are lots
+of ways to do this but a simple join will be relatively quick and
+also be super clear like the above query.
+
+If we run
 ```ruby
 SampleDataDelete.delete_contacts_optimized(category)
 ```
-
-which looks like this:
- ```ruby
-def self.delete_contacts_optimized(category)
-  Categorization.where(:category_id => cat.id).delete_all
-end
+which is written as:
+```ruby
+Contact.joins(:categorizations).where('categorizations.category_id' => cat.id).delete_all
 ```
-This will produce a one line delete:
-```
-DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 1
-```
-And benchmarks at:
-```
-=>   0.010000   0.000000   0.010000 (  0.014286)
+and is translated into MySQL and benchmarks at:
+```ruby
+SQL (2114.8ms)  DELETE FROM `contacts` WHERE `contacts`.`id` IN (SELECT id FROM (SELECT `contacts`.`id` FROM `contacts` INNER JOIN `categorizations` ON `categorizations`.`contact\_id` = `contacts`.`id` WHERE `categorizations`.`category\_id` = 3) __active_record_temp)
+         user     system      total         real
+=>   0.050000   0.010000   0.060000 (  2.170937)
 ```
 
-Woo look at that speed!
+All of these suggestion also depend on your applications needs. It's
+important to keep in mind that with `delete\_all` will not fire callbacks
+so dependent associations may not be deleted as expected. Testing your
+queries is best.
