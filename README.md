@@ -304,6 +304,7 @@ the create command.
 A destroy all might look like this:
 ```ruby
 SampleDataDelete.destroy_contacts_oh_crud(category)
+```
 
 which will run:
 ```ruby
