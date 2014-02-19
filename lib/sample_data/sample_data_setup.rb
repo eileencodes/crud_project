@@ -52,18 +52,8 @@ module SampleDataSetup
     create_categorizations
   end
 
-  def self.create_categories_and_relationships
-    create_categories
-    create_categorizations
-  end
-
   def self.tear_down_everything
     Contact.delete_all
-    Category.delete_all
-    Categorization.delete_all
-  end
-
-  def self.tear_down_categories_and_relationships
     Category.delete_all
     Categorization.delete_all
   end
@@ -73,7 +63,17 @@ module SampleDataSetup
     build_everything
   end
 
-  def self.redo_categories_and_relationships
+  def self.create_categories_and_relationships
+    create_categories
+    create_categorizations
+  end
+
+  def self.tear_down_categories_and_relationships
+    Category.delete_all
+    Categorization.delete_all
+  end
+
+  def self.rebuild_categories_and_relationships
     tear_down_categories_and_relationships
     create_categories_and_relationships
   end
