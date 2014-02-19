@@ -327,6 +327,11 @@ ran the same query:
 Contact Load (54.1ms)  SELECT `contacts`.* FROM `contacts` INNER JOIN `categorizations` ON `contacts`.`id` = `categorizations`.`contact_id` WHERE `categorizations`.`category_id` = 3
 SQL (54.3ms)  DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 3 AND `categorizations`.`contact_id` IN (1, 2, 3, 4, 5, 6, 7, 8,...10000)
 ```
+And benchmarks at:
+```
+         user     system      total         real
+=> 129.550000   0.100000 129.650000 (129.727065)
+```
 
 This is better because we aren't instantiating each object, but it's confusing to
 other developers what we're trying to delete here.
@@ -346,6 +351,11 @@ Now this is what we get if the relationship between category and categorizations
 not actually loaded. But since that's rarely the case here's what we actually get:
 ```
 DELETE FROM `categorizations` WHERE `categorizations`.`category_id` = 10 AND `categorizations`.`id` IN (10001, 10002, 10003, 10004,...
+```
+And benchmarks at:
+```
+         user     system      total         real
+=> 130.080000   0.120000 130.200000 (130.308334)
 ```
 Wat.
 
