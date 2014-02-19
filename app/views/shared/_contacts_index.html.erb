@@ -38,7 +38,7 @@
     <% end %>
   </table>
   <%= paginate @contacts %>
+  <%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
 <% else %>
   <p>You have no contacts. To add some click the "Add Contact" button.</p>
 <% end %>
-<%= link_to "Add Contact", new_user_contact_path(current_user), class: "btn pull-right btn-success" %>
