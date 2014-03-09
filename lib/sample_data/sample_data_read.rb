@@ -17,4 +17,10 @@ module SampleDataRead
       puts contact.first_name
     end
   end
+
+  def self.read_with_pluck
+    Contact.where(:user_id => 1, :country => "USA").pluck(:first_name).each do |first_name|
+      puts first_name
+    end
+  end
 end
