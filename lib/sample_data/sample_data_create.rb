@@ -48,4 +48,11 @@ module SampleDataCreate
     end
   end
 
+  def self.create_contacts_optimized_infile
+    ActiveRecord::Base.connection.execute(%Q(LOAD DATA INFILE '#{Rails.root}/lib/sample_data/contacts.csv' INTO TABLE contacts
+FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(first_name, last_name, birthday, phone, email, twitter_account_link, facebook_account_link, linkedin_account_link, gplus_account_link, github_account_link, address_1, address_2, city, state, postal_code, country, company, title, company_address_1, company_address_2, company_city, company_state, company_postal_code, company_country, user_id);))
+  end
+
 end
